@@ -1,10 +1,10 @@
 {
-    "name": "avalex/kirby-avalex",
+    "name": "avalexgmbh/kirby-avalex",
     "description": "avalex client for Kirby CMS. Requires avalex API version 3 or higher.",
     "minimum-stability": "stable",
     "license": "proprietary",
     "type": "kirby-plugin",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "authors": [
         {
             "name": "avalex GmbH",
