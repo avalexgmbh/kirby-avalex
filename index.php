@@ -68,7 +68,23 @@ Kirby::plugin('avalex/avalex', [
         'avalex' => function (): \Avalex\Avalex\Avalex {
             return new \Avalex\Avalex\Avalex();
         },
-    ]
+    ],
+
+    'routes' => [
+        [
+            'pattern' => 'avalex-refresh(:all)',
+            'language' => '*',
+            'action' => function($lang = null, string $resource = '') {
+                if (!$resource) {
+                    $resource = (string) get('resource', param('resource'));
+                }
+
+                $content = avalex(trim($resource, '/'));
+
+                return ['status' => $content ? 'ok' : 'unknown'];
+            }
+        ],
+    ],
 ]);
 
 if (\Kirby\Cms\Helpers::hasOverride('avalex') === false) {

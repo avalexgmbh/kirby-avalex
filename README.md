@@ -222,6 +222,30 @@ This template is used for rendering legal text pages by default using the above-
 
 You can provide a custom template with the same name (under `/site/templates/avalex.php`) in order to override the plugin’s template with your own.
 
+### Trigger Legal Text Refresh
+
+According to avalex’ terms and conditions it is required that the legal texts you implemented have to be updated at least every 6 hours. This can be easily achieved by running a cron job that calls the affected pages.
+
+If you use a cron job service like cron-job.org you may run into difficulties since the service might accept only short responses from the requested page and thus reports full blown HTML content as an error! In this case you can use a special route to trigger the legal text refresh, while the response will be a minimal status message in JSON format. To refresh for instance the legal text for your imprint page, just call one of the following URLs:
+
+1. https://example.com/avalex-refresh/imprint
+2. https://example.com/avalex-refresh?resource=imprint
+3. https://example.com/avalex-refresh/resource:imprint
+
+The type of legal text has to be appended to the URL, either as path extension (#1; preferred), or as query parameter (#2), or as URL parameter (#3). If the path extension is not present first the query parameter and second the URL parameter will be used. The following types of legal texts are available:
+
+- `imprint`
+- `disclaimer`
+- `conditions`
+- `revocation`
+
+Note that depending on your type of subscription, you may not have access to all legal texts avalex generally provides.
+
+Multi language setups are also supported:
+
+- https://example.com/de/avalex-refresh/imprint
+- https://example.com/en/avalex-refresh/imprint
+
 ## Options
 
 The plugin provides several configuration options which you may override in your project’s config:

@@ -16,7 +16,6 @@
 namespace Avalex\Avalex;
 
 use Kirby\Cache\Cache;
-use Kirby\Exception\Exception;
 use Kirby\Exception\InvalidArgumentException;
 use Kirby\Filesystem\F;
 use Kirby\Http\Remote;
@@ -96,6 +95,18 @@ class Avalex {
      */
     public function resource(string $name, mixed $options = null): string {
         if (empty($name)) {
+            $this->log("Resource name must not be empty! Available resources: " . implode(', ', $this->resources()));
+            return '';
+        }
+
+        if (!$this->active()) {
+            $this->log("Plugin is inactive, option 'active' must be set to true!");
+            return '';
+        }
+
+        if (!$this->verifyResource($name)) {
+            // resource invalid
+            $this->log("Unknown resource '{$name}'! Available resources: " . implode(', ', $this->resources()));
             return '';
         }
 
@@ -360,7 +371,11 @@ class Avalex {
         $query = array_merge(
             $this->credentials(),
             ['version' => static::$avx_version],
-            $params
+            $params,
+            [
+                'cms'          => 'kirby',
+                'plugin_token' => 'xxnlXd6AuVWiJLhP3H82BAdj9Kmen6CL',
+            ]
         );
 
         if ($this->language !== '') {
@@ -418,8 +433,8 @@ class Avalex {
                 } else {
                     $reason = match($response->code()) {
                         400 => "avalex.de said '400 Bad Request'",
-                        401 => "avalex.de said '401 Unauthorized'. Please check your 'domain' and 'apikey' settings.",
-                        403 => "avalex.de said '403 Forbidden'. Please check your 'domain' and 'apikey' settings.",
+                        401 => "avalex.de said '401 Unauthorized'. Please check your 'apikey' and 'domain' settings.",
+                        403 => "avalex.de said '403 Forbidden'. Please check your 'apikey' and 'domain' settings.",
                         404 => "avalex.de said '404 Not found'",
                         500 => "avalex.de said '500 Internal Server Error'",
                         503 => "avalex.de said '503 Service Unavailable'",
@@ -497,5 +512,27 @@ class Avalex {
      */
     private function logException(\Exception $exc) {
         $this->log('Exception: ' . $exc->getMessage());
+    }
+
+    /**
+     * @return string[]
+     */
+    private function resources(): array {
+        return [
+            static::RESOURCE_DISCLAIMER,
+            static::RESOURCE_IMPRINT,
+            static::RESOURCE_CONDITIONS,
+            static::RESOURCE_REVOCATION,
+        ];
+    }
+
+    /**
+     * Check if given resource exists
+     *
+     * @param string $resource
+     * @return bool
+     */
+    public function verifyResource(string $resource): bool {
+        return in_array($resource, $this->resources());
     }
 }
